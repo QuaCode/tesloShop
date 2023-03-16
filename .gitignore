@@ -3,6 +3,7 @@ postgres
 
 # Public
 /public
+/static/products/*
 
 # Enviroment
 .env
