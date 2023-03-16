@@ -1,6 +1,9 @@
 # DB
 postgres
 
+# Public
+/public
+
 # Enviroment
 .env
 .env.example
