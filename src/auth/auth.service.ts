@@ -10,6 +10,8 @@ import { Repository } from 'typeorm';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './entities';
 import * as bcrypt from 'bcrypt';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +20,7 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -30,9 +33,7 @@ export class AuthService {
       });
       await this.userRepository.save(user);
       delete user.password;
-      // TODO: Return JWT de acceso
-
-      return user;
+      return { ...user, token: this.getJwtToken({ email: user.email }) };
     } catch (error) {
       this.handleDbExceptions(error);
     }
@@ -50,8 +51,11 @@ export class AuthService {
     if (!bcrypt.compareSync(password, user.password))
       throw new UnauthorizedException('Not valid credentials');
 
-    return user;
-    // TODO: retornar el JWT
+    return { ...user, token: this.getJwtToken({ email: user.email }) };
+  }
+
+  private getJwtToken(payload: JwtPayload) {
+    return this.jwtService.sign(payload);
   }
 
   private handleDbExceptions(error: any): never {
