@@ -8,6 +8,7 @@ postgres
 # Enviroment
 .env
 .env.example
+.vscode
 
 # compiled output
 /dist
