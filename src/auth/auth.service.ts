@@ -10,7 +10,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './entities';
 import * as bcrypt from 'bcrypt';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -51,6 +51,10 @@ export class AuthService {
     if (!bcrypt.compareSync(password, user.password))
       throw new UnauthorizedException('Not valid credentials');
 
+    return { ...user, token: this.getJwtToken({ id: user.id }) };
+  }
+
+  async checkAuth(user: User) {
     return { ...user, token: this.getJwtToken({ id: user.id }) };
   }
 
